@@ -1,33 +1,23 @@
-import { useState } from "react"
-import { ChevronLeft, ChevronRight } from "lucide-react"
-
+import { useState } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import brands from "../data/brands.json";
 export default function BrandsCarousel() {
-  const brands = [
-    { name: "Bugaboo", logo: "https://www.bellababy.co.uk/media/weltpixel/owlcarouselslider/images/b/u/bugaboo.png" },
-    { name: "Maxi-Cosi", logo: "https://www.bellababy.co.uk/media/weltpixel/owlcarouselslider/images/m/a/maxi-cosi-logo_1.png" },
-    { name: "BabyBjorn", logo: "https://www.bellababy.co.uk/media/weltpixel/owlcarouselslider/images/b/a/babybjornlogo1.png" },
-    { name: "Stokke", logo: "https://www.bellababy.co.uk/media/weltpixel/owlcarouselslider/images/s/t/stokke.png" },
-    { name: "Mamas & Papas", logo: "https://www.bellababy.co.uk/media/weltpixel/owlcarouselslider/images/m/a/mamas-papas.png" },
-    { name: "Uppa Baby", logo: "https://www.bellababy.co.uk/media/weltpixel/owlcarouselslider/images/u/p/uppababy.png" },
-  ]
+  const visibleItems = 4;
+  const [index, setIndex] = useState(0);
 
-  const visibleItems = 4
-  const [index, setIndex] = useState(0)
-
-  const maxIndex = brands.length - visibleItems
+  const maxIndex = brands.length - visibleItems;
 
   const next = () => {
-    setIndex((prev) => (prev >= maxIndex ? 0 : prev + 1))
-  }
+    setIndex((prev) => (prev >= maxIndex ? 0 : prev + 1));
+  };
 
   const prev = () => {
-    setIndex((prev) => (prev <= 0 ? maxIndex : prev - 1))
-  }
+    setIndex((prev) => (prev <= 0 ? maxIndex : prev - 1));
+  };
 
   return (
     <section className="max-w-7xl mx-auto px-4 py-12">
       <div className="relative overflow-hidden">
-
         {/* Left Button */}
         <button
           onClick={prev}
@@ -66,8 +56,7 @@ export default function BrandsCarousel() {
         >
           <ChevronRight className="w-6 h-6" />
         </button>
-
       </div>
     </section>
-  )
+  );
 }

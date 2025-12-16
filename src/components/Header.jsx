@@ -1,6 +1,10 @@
 import { Search, User, MapPin, ShoppingCart } from "lucide-react"
+import { Link, useLocation } from "react-router-dom"
+import Infobar from "./Infobar"
+import BreadCrumbs from "./BreadCrumbs";
 
 export default function Header() {
+  const location=useLocation();
   return (
     <header>
       {/* Top bar */}
@@ -41,81 +45,68 @@ export default function Header() {
       {/* Navigation */}
       <nav className="bg-white px-2 py-2 pb-4 border-b-gray-400 border-b w-[90%] mx-auto">
         <div className="max-w-7xl mx-auto">
-          <ul className="flex items-center justify-between text-sm">
+          <ul className="flex items-center justify-between text-sm text-gray-700">
             <li>
-              <a href="#" className="hover:text-orange-400">
+              <Link to="/category/pushchairs" className="hover:text-orange-400">
                 Pushchairs
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#" className="hover:text-orange-400">
+              <Link to="/category/car_seats" className="hover:text-orange-400">
                 Car Seats
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#" className="hover:text-orange-400">
+              <Link to="/category/feeding" className="hover:text-orange-400">
                 Feeding
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#" className="hover:text-orange-400">
+              <Link to="/category/sitting" className="hover:text-orange-400">
                 Sitting
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#" className="hover:text-orange-400">
+              <Link to="/category/boutique" className="hover:text-orange-400">
                 Boutique
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#" className="hover:text-orange-400">
+              <Link to="/category/nursery" className="hover:text-orange-400">
                 Nursery
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#" className="hover:text-orange-400">
+              <Link to="/category/hygiene" className="hover:text-orange-400">
                 Hygiene
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#" className="hover:text-orange-400">
+              <Link to="/category/travel" className="hover:text-orange-400">
                 Travel
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#" className="hover:text-orange-400">
+              <Link to="/category/gifts" className="hover:text-orange-400">
                 Gifts
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#" className="hover:text-orange-400">
+              <Link to="/category/brand" className="hover:text-orange-400">
                 Brands
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#" className="hover:text-orange-400">
+              <Link to="/blog" className="hover:text-orange-400">
                 Blog
-              </a>
+              </Link>
             </li>
           </ul>
         </div>
       </nav>
 
       {/* Info Bar */}
-      <div className="w-[90%] text-sm px-4 py-4 mx-auto flex items-center justify-around">
-            <span className="flex items-center gap-2">
-              <span>📦</span> Free click & collect
-            </span>
-            <span className="flex items-center gap-2">
-              <span>🚚</span> Free delivery over £49*
-            </span>
-            <span className="flex items-center gap-2">
-              <span>↩️</span> 30 Day returns
-            </span>
-          <div className="flex items-center gap-2">
-            <img src="https://www.bellababy.co.uk/media/wysiwyg/feefo-score-icon.png" alt="" />
-          </div>
-      </div>
+      {location.pathname==="" || location.pathname==="/" ? <Infobar/> : <BreadCrumbs/>}
     </header>
   )
 }

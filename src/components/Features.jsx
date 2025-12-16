@@ -1,18 +1,5 @@
+import features from "../data/features.json"
 export default function Features() {
-  const features = [
-    {
-      icon: "🚚",
-      title: "Free delivery over £49*",
-      description: "On all UK orders over £49",
-      link: "Learn more",
-    },
-    {
-      icon: "↩️",
-      title: "30 Day Returns",
-      description: "No quibble return policy",
-      link: "Learn more",
-    },
-  ]
 
   return (
     <section className="bg-gray-50 p-12">

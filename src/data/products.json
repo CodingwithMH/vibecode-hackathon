@@ -1,0 +1,30 @@
+[
+  {
+    "name": "Mamas & Papas Anti-Allergy Quilted Cotbed Mattress Protector",
+    "price": "£25.00",
+    "image": "/images/white-quilted-mattress-protector.jpg",
+    "badge": "Sale",
+    "badgeColor": "bg-yellow-400"
+  },
+  {
+    "name": "Mamas & Papas Mini Rattle - Lenny Lion",
+    "price": "£8.00",
+    "image": "/images/cute-yellow-lion-baby-rattle-toy.jpg",
+    "badge": "New",
+    "badgeColor": "bg-yellow-400"
+  },
+  {
+    "name": "Mamas & Papas Safetyfirst Wildlife Activity Triangle Toy",
+    "price": "£32.00",
+    "image": "/images/colorful-baby-activity-triangle-toy-animals.jpg",
+    "badge": "Sale",
+    "badgeColor": "bg-yellow-400"
+  },
+  {
+    "name": "Mamas & Papas Welcome to the World Snuggle Nursing Pillow - Leaf",
+    "price": "£44.00",
+    "image": "/images/grey-nursing-pillow-cushion.jpg",
+    "badge": "New Arrival",
+    "badgeColor": "bg-gray-400"
+  }
+]

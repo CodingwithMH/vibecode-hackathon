@@ -1,7 +1,12 @@
 import { Facebook, Twitter, Instagram, Youtube } from "lucide-react"
+import NewsLetter from "./NewsLetter"
+import Features from "./Features"
 
 export default function Footer() {
   return (
+    <>
+    <Features/>
+    <NewsLetter/>
     <footer className="bg-[#2C3E50] text-white">
       <div className="max-w-7xl mx-auto px-4 py-12">
         <div className="grid grid-cols-4 gap-8 mb-8">
@@ -113,14 +118,15 @@ export default function Footer() {
       </div>
         <div className="bg-white text-gray-700 p-8 text-sm flex justify-between items-center">
           <p>© www.bellababy.co.uk 2025 | All rights reserved</p>
-          <div class="flex items-center flex-col lg:flex-row">
-    <p class="font-bold lg:mr-8 mb-2 lg:mb-0 text-gray-600">Secure Payments</p>
-    <div class="flex items-center"/>
-        <img loading="lazy" src="https://www.bellababy.co.uk/static/version1764159769/frontend/Bellababy/hyva-base/en_GB/images/payment/ecommerce-europe.png" alt="Ecommerce Europe" width="42" height="23" class="mr-2"/>
+          <div className="flex items-center flex-col lg:flex-row">
+    <p className="font-bold lg:mr-8 mb-2 lg:mb-0 text-gray-600">Secure Payments</p>
+    <div className="flex items-center"/>
+        <img loading="lazy" src="https://www.bellababy.co.uk/static/version1764159769/frontend/Bellababy/hyva-base/en_GB/images/payment/ecommerce-europe.png" alt="Ecommerce Europe" width="42" height="23" className="mr-2"/>
         <img loading="lazy" src="https://www.bellababy.co.uk/static/version1764159769/frontend/Bellababy/hyva-base/en_GB/images/payment/amazonpay.png" alt="AmazonPay" width="63" height="25"/>
         <img loading="lazy" src="https://www.bellababy.co.uk/static/version1764159769/frontend/Bellababy/hyva-base/en_GB/images/payment/payments.jpg" alt="Payment Providers" width="165" height="47"/>
     </div>
 </div>
     </footer>
+    </>
   )
 }
