@@ -1,10 +1,8 @@
 import { createBrowserRouter } from "react-router-dom"
 import App from "../App"
-import ShopCategory from "../pages/ShopCategory"
-import LandingPage from "../pages/LandingPage"
-import LocationPage from "../pages/LocationPage"
-import CategoryProduct from "../pages/CategoryProduct"
-import Checkout from "../pages/Checkout"
+import Index from "../pages/Index"
+import UploadPage from "../pages/UploadPage"
+import QuizzesPage from "../pages/QuizzesPage"
 
 const router = createBrowserRouter(
   [
@@ -14,23 +12,15 @@ const router = createBrowserRouter(
       children:[
         {
           path:"",
-          element:<LandingPage/>
+          element:<Index/>
         },
         {
-          path:"/category/:categoryName",
-          element:<ShopCategory/>
+          path:"/upload",
+          element:<UploadPage/>
         },
         {
-          path:"/product/:productName",
-          element:<CategoryProduct/>
-        },
-        {
-          path:"/locations",
-          element:<LocationPage/>
-        },
-        {
-          path:"/checkout/cart",
-          element:<Checkout/>
+          path:"/quizzes",
+          element:<QuizzesPage/>
         },
       ]
     }
