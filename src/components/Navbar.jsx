@@ -44,7 +44,7 @@ export default function Navbar() {
               const isActive = location.pathname === item.path;
 
               return (
-                <Link key={item.name} to={item.path}>
+                <a key={item.name} href={item.path}>
                   <div
                     className={`nav-item group
                       ${isActive ? "nav-active" : "nav-inactive"}`}
@@ -52,7 +52,7 @@ export default function Navbar() {
                     <Icon className="w-4 h-4" />
                     {item.name}
                   </div>
-                </Link>
+                </a>
               );
             })}
           </div>
