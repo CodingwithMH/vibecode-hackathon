@@ -83,11 +83,14 @@ export default function FileUpload({
           onDragOver={handleDrag}
           onDrop={handleDrop}
           className={`
-            relative border-2 border-dashed rounded-3xl p-12 text-center
-            transition-all duration-300 cursor-pointer
-            ${isDragging
-              ? "border-blue-600 bg-blue-50 scale-105"
-              : "border-gray-300 hover:border-blue-400 hover:bg-gray-50"
+            relative p-12 rounded-3xl text-center cursor-pointer
+            border-2 border-dashed transition-all duration-300
+            backdrop-blur-xl bg-white/10
+            animate-upload-enter
+            ${
+              isDragging
+                ? "border-cyan-400 scale-105 shadow-[0_0_35px_rgba(34,211,238,0.6)]"
+                : "border-white/20 hover:border-purple-400 hover:shadow-[0_0_25px_rgba(168,85,247,0.4)]"
             }
           `}
         >
@@ -100,70 +103,78 @@ export default function FileUpload({
 
           <div
             className={`
-              w-20 h-20 mx-auto mb-6 rounded-2xl bg-blue-100
-              flex items-center justify-center transition-transform
-              ${isDragging ? "scale-110 bg-blue-200" : ""}
+              w-20 h-20 mx-auto mb-6 rounded-2xl
+              bg-linear-to-br from-cyan-400/20 to-purple-500/30
+              flex items-center justify-center
+              transition-transform duration-300
+              animate-float
+              ${isDragging ? "scale-110" : ""}
             `}
           >
-            <Upload className="w-10 h-10 text-blue-600" />
+            <Upload className="w-10 h-10 text-cyan-300" />
           </div>
 
-          <h3 className="text-xl font-semibold mb-2 text-gray-900">
+          <h3 className="text-xl font-semibold mb-2 text-white">
             Drop your document here
           </h3>
-          <p className="text-gray-500 mb-4">or click to browse files</p>
+          <p className="text-gray-300 mb-4">or click to browse files</p>
 
-          <div className="flex justify-center gap-2 text-sm text-gray-500">
+          <div className="flex justify-center gap-2 text-sm text-gray-300">
             {["PDF", "DOCX", "TXT"].map((type) => (
-              <span key={type} className="px-3 py-1 bg-gray-100 rounded-full">
+              <span
+                key={type}
+                className="px-3 py-1 rounded-full bg-white/10 border border-white/20"
+              >
                 {type}
               </span>
             ))}
           </div>
         </div>
       ) : (
-        <div className="border rounded-2xl p-6 shadow-sm bg-white">
+        <div className="p-6 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 animate-fade-in">
           <div className="flex items-start gap-4">
-            <div className="w-14 h-14 rounded-xl bg-blue-100 flex items-center justify-center">
-              <FileText className="w-7 h-7 text-blue-600" />
+            <div className="w-14 h-14 rounded-xl bg-linear-to-br from-cyan-400/20 to-purple-500/30 flex items-center justify-center">
+              <FileText className="w-7 h-7 text-cyan-300" />
             </div>
 
             <div className="flex-1">
               <div className="flex justify-between items-start">
                 <div>
-                  <h4 className="font-semibold truncate text-gray-900">
+                  <h4 className="font-semibold truncate text-white">
                     {uploadedFile.name}
                   </h4>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-gray-400">
                     {formatFileSize(uploadedFile.size)}
                   </p>
                 </div>
 
                 <button
                   onClick={removeFile}
-                  className="p-1 rounded hover:bg-gray-100"
+                  className="p-1 rounded-lg hover:bg-white/10 transition"
                 >
-                  <X className="w-4 h-4 text-gray-600" />
+                  <X className="w-4 h-4 text-gray-300" />
                 </button>
               </div>
 
               <div className="mt-4">
                 {isUploading ? (
                   <>
-                    <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+                    <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
                       <div
-                        className="h-full bg-blue-600 transition-all duration-300"
+                        className="h-full bg-linear-to-r from-cyan-400 to-purple-500 transition-all duration-300"
                         style={{ width: `${uploadProgress}%` }}
                       />
                     </div>
-                    <p className="text-sm text-gray-500 mt-1">
-                      Uploading... {uploadProgress}%
+                    <p className="text-sm text-gray-400 mt-1">
+                      Uploading… {uploadProgress}%
                     </p>
                   </>
                 ) : (
-                  <div className="flex items-center gap-2 text-green-600">
+                  <div className="flex items-center gap-2 text-green-400 animate-success-pop">
                     <Check className="w-4 h-4" />
-                    <span className="text-sm font-medium">Upload complete</span>
+                    <span className="text-sm font-medium">
+                      Upload complete
+                    </span>
                   </div>
                 )}
               </div>

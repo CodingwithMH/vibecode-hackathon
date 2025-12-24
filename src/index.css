@@ -1,1 +1,346 @@
 @import "tailwindcss";
+/* 3D card flip utilities */
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.transform-style-preserve-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
+/* ===============================
+   FUTURISTIC ANIMATIONS
+================================ */
+
+/* Smooth page entrance */
+@keyframes slideUpFade {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-up {
+  animation: slideUpFade 0.8s ease-out forwards;
+}
+
+/* Stagger delays */
+.stagger-1 { animation-delay: 0.1s; }
+.stagger-2 { animation-delay: 0.2s; }
+.stagger-3 { animation-delay: 0.3s; }
+.stagger-4 { animation-delay: 0.4s; }
+
+/* Neon glow pulse */
+@keyframes neonPulse {
+  0% { box-shadow: 0 0 15px rgba(56,189,248,0.3); }
+  50% { box-shadow: 0 0 35px rgba(168,85,247,0.7); }
+  100% { box-shadow: 0 0 15px rgba(56,189,248,0.3); }
+}
+
+.neon-pulse {
+  animation: neonPulse 2.5s infinite;
+}
+
+/* Floating animation */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-12px); }
+  100% { transform: translateY(0px); }
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+/* Gradient border animation */
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+.animated-border {
+  background-size: 200% 200%;
+  animation: gradientMove 6s linear infinite;
+}
+
+/* Fade-in (small elements) */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.6s ease-in forwards;
+}
+
+/* Button hover glow */
+.btn-neon:hover {
+  box-shadow:
+    0 0 15px rgba(56,189,248,0.6),
+    0 0 30px rgba(168,85,247,0.5);
+}
+
+/* Card hover lift */
+.card-futuristic {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.card-futuristic:hover {
+  transform: translateY(-10px) scale(1.02);
+  box-shadow: 0 0 40px rgba(168,85,247,0.35);
+}
+
+/* ===============================
+   NAVBAR FUTURISTIC STYLES
+================================ */
+
+@keyframes navbarFade {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-navbar {
+  animation: navbarFade 0.6s ease-out forwards;
+}
+
+/* Nav item base */
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.9rem;
+  border-radius: 0.75rem;
+  font-weight: 500;
+  transition: all 0.25s ease;
+}
+
+/* Inactive */
+.nav-inactive {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.nav-inactive:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #67e8f9;
+  box-shadow: 0 0 15px rgba(34,211,238,0.3);
+}
+
+/* Active */
+.nav-active {
+  background: linear-gradient(135deg, rgba(34,211,238,0.2), rgba(168,85,247,0.25));
+  color: #67e8f9;
+  box-shadow: 0 0 20px rgba(168,85,247,0.5);
+}
+
+/* Mobile slide */
+@keyframes slideDownNeon {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-down-neon {
+  animation: slideDownNeon 0.4s ease-out forwards;
+}
+
+/* Glassmorphism */
+.glass-card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.12);
+}
+
+/* Animations */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-up {
+  animation: slideUp 0.5s ease-out forwards;
+}
+
+@keyframes pop {
+  0% {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  80% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-pop {
+  animation: pop 0.6s ease-out forwards;
+}
+
+@keyframes scoreGlow {
+  0% {
+    text-shadow: 0 0 0 transparent;
+  }
+  50% {
+    text-shadow: 0 0 25px currentColor;
+  }
+  100% {
+    text-shadow: 0 0 0 transparent;
+  }
+}
+
+.animate-score {
+  animation: scoreGlow 2s ease-in-out infinite;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+.animate-progress {
+  animation: fadeIn 0.6s ease-out forwards;
+}
+
+.hover-lift {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 35px rgba(0, 0, 0, 0.15);
+}
+
+/* Glassmorphism */
+.glass-card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.12);
+}
+
+/* Quiz card animation */
+.quiz-card {
+  animation: slideUp 0.5s ease-out forwards;
+  opacity: 0;
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+}
+
+.quiz-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 30px 70px rgba(79, 70, 229, 0.25);
+}
+
+/* Animations */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-down {
+  animation: slideDown 0.4s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+
+/* Loader */
+
+.loader {
+  width: 48px;
+  height: 48px;
+  border: 2px solid #FFF;
+  border-radius: 50%;
+  display: inline-block;
+  position: relative;
+  box-sizing: border-box;
+  animation: rotation 1s linear infinite;
+}
+.loader::after {
+  content: '';  
+  box-sizing: border-box;
+  position: absolute;
+  left: 50%;
+  top: 0;
+  background: #FF3D00;
+  width: 3px;
+  height: 24px;
+  transform: translateX(-50%);
+}
+    
+@keyframes rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+} 

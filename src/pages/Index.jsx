@@ -1,26 +1,26 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "../components/Navbar";
 import FileUpload from "../components/FileUpload";
 import ModeToggle from "../components/ModeToggle";
 import QuizCard from "../components/QuizCard";
 import Flashcard from "../components/Flashcard";
 import ResultsSummary from "../components/ResultsSummary";
-import { Zap, Upload, Brain, TrendingUp, Sparkles, ArrowRight } from "lucide-react";
-
-const sampleQuizzes = [
-  { question: "What is the capital of France?", options: [{ id: "a", text: "London" }, { id: "b", text: "Berlin" }, { id: "c", text: "Paris" }, { id: "d", text: "Madrid" }], correctAnswerId: "c" },
-  { question: "Which planet is known as the Red Planet?", options: [{ id: "a", text: "Venus" }, { id: "b", text: "Mars" }, { id: "c", text: "Jupiter" }, { id: "d", text: "Saturn" }], correctAnswerId: "b" },
-  { question: "What is the largest mammal on Earth?", options: [{ id: "a", text: "African Elephant" }, { id: "b", text: "Blue Whale" }, { id: "c", text: "Giraffe" }, { id: "d", text: "Polar Bear" }], correctAnswerId: "b" },
-];
-
-const sampleFlashcards = [
-  { front: "What is photosynthesis?", back: "The process by which plants convert sunlight into energy" },
-  { front: "What is the formula for water?", back: "H₂O" },
-  { front: "Who wrote Romeo and Juliet?", back: "William Shakespeare" },
-  { front: "What is the speed of light?", back: "299,792,458 meters per second" },
-];
+import {
+  Zap,
+  Upload,
+  Brain,
+  TrendingUp,
+  Sparkles,
+  ArrowRight,
+} from "lucide-react";
 
 const Index = () => {
+  const [loading, setLoading] = useState(false);
+  const [quizTime, setQuizTime] = useState(0);
+  const [timerRunning, setTimerRunning] = useState(false);
+  const [flashCards, setFlashCards] = useState([]);
+  const [quizzes, setQuizzes] = useState([]);
   const [appState, setAppState] = useState("landing");
   const [mode, setMode] = useState("quiz");
   const [uploadedFile, setUploadedFile] = useState(null);
@@ -29,27 +29,74 @@ const Index = () => {
   const [correctAnswers, setCorrectAnswers] = useState(0);
   const [incorrectAnswers, setIncorrectAnswers] = useState(0);
 
+  useEffect(() => {
+    let interval = null;
+    if (timerRunning) {
+      interval = setInterval(() => {
+        setQuizTime((prev) => prev + 1);
+      }, 1000);
+    }
+    return () => interval && clearInterval(interval);
+  }, [timerRunning]);
+
   const handleFileSelect = (file) => setUploadedFile(file);
 
-  const handleGenerate = () => {
+  const handleGenerate = async () => {
+    if (!uploadedFile) return;
+    const formData = new FormData();
+    formData.append("file", uploadedFile);
+
     if (mode === "quiz") {
-      setCurrentQuestionIndex(0);
-      setCorrectAnswers(0);
-      setIncorrectAnswers(0);
-      setAppState("quiz");
+      formData.append("type", "quiz");
+      try {
+        setLoading(true);
+        const response = await fetch(
+          "https://alliteratively-crescentlike-keneth.ngrok-free.dev/webhook/upload",
+          { method: "POST", body: formData }
+        );
+        const data = await response.json();
+        setQuizzes(data);
+        setCurrentQuestionIndex(0);
+        setCorrectAnswers(0);
+        setIncorrectAnswers(0);
+        setQuizTime(0);
+        setTimerRunning(true);
+        setAppState("quiz");
+        setLoading(false);
+      } catch (err) {
+        console.error(err);
+      }
     } else {
-      setCurrentCardIndex(0);
-      setAppState("flashcard");
+      formData.append("type", "flashcard");
+      try {
+        setLoading(true);
+        const response = await fetch(
+          "https://alliteratively-crescentlike-keneth.ngrok-free.dev/webhook/upload",
+          { method: "POST", body: formData }
+        );
+        const data = await response.json();
+        setFlashCards(data);
+        setCurrentCardIndex(0);
+        setAppState("flashcard");
+        setLoading(false);
+      } catch (err) {
+        console.error(err);
+      }
     }
   };
 
   const handleQuizAnswer = (isCorrect) => {
-    if (isCorrect) setCorrectAnswers((prev) => prev + 1);
-    else setIncorrectAnswers((prev) => prev + 1);
+    isCorrect
+      ? setCorrectAnswers((p) => p + 1)
+      : setIncorrectAnswers((p) => p + 1);
 
     setTimeout(() => {
-      if (currentQuestionIndex < sampleQuizzes.length - 1) setCurrentQuestionIndex((prev) => prev + 1);
-      else setAppState("results");
+      if (currentQuestionIndex < quizzes.length - 1)
+        setCurrentQuestionIndex((p) => p + 1);
+      else {
+        setTimerRunning(false);
+        setAppState("results");
+      }
     }, 500);
   };
 
@@ -57,165 +104,201 @@ const Index = () => {
     setCurrentQuestionIndex(0);
     setCorrectAnswers(0);
     setIncorrectAnswers(0);
+    setQuizTime(0);
+    setTimerRunning(true);
     setAppState("quiz");
   };
 
+  const formatTime = (s) =>
+    `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, "0")}`;
+
   const features = [
-    { icon: Upload, title: "Upload Documents", description: "Support for PDF, DOCX, and TXT files" },
-    { icon: Brain, title: "AI-Powered Generation", description: "Instantly create quizzes and flashcards" },
-    { icon: TrendingUp, title: "Track Progress", description: "Identify weak areas and improve" },
+    { icon: Upload, title: "Upload Notes", desc: "PDF, DOCX, TXT supported" },
+    { icon: Brain, title: "AI Generation", desc: "Smart quizzes & flashcards" },
+    { icon: TrendingUp, title: "Track Growth", desc: "Improve weak areas" },
   ];
 
+
+const weakTopics = quizzes
+  .filter(q => q.topic && !q.correct)
+  .reduce((acc, q) => {
+    const existing = acc.find(t => t.name === q.topic);
+    if (existing) {
+      existing.total++;
+      if (q.correct) existing.correct++;
+    } else {
+      acc.push({ name: q.topic, correct: q.correct ? 1 : 0, total: 1 });
+    }
+    return acc;
+  }, [])
+  .map(t => ({
+    name: t.name,
+    score: Math.round((t.correct / t.total) * 100),
+  }))
+  .filter(t => t.score < 70);
+
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
+    <div className="min-h-screen bg-linear-to-br from-[#05010f] via-[#0b0625] to-black text-white">
+      <div className="absolute top-20 left-20 w-96 h-96 bg-cyan-500/20
+                blur-3xl rounded-full animate-float" />
+
+
+      {/* BACKGROUND GLOWS */}
+      <div className="fixed inset-0 -z-10 overflow-hidden">
+        <div className="absolute top-20 left-20 w-96 h-96 bg-cyan-500/20 blur-3xl rounded-full animate-pulse" />
+        <div className="absolute bottom-20 right-20 w-96 h-96 bg-purple-600/20 blur-3xl rounded-full animate-pulse delay-300" />
+      </div>
 
       <main className="pt-16">
-        {/* Landing */}
-        {appState === "landing" && (
-          <>
-            <section className="relative overflow-hidden">
-              <div className="absolute inset-0">
-                <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
-                <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl" />
+        <AnimatePresence mode="wait">
+
+          {/* LANDING */}
+          {appState === "landing" && (
+            <motion.section
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              className="py-28 text-center"
+            >
+              <div className="inline-flex items-center gap-2 px-4 py-2 mb-6 rounded-full bg-white/10 backdrop-blur">
+                <Sparkles className="w-4 h-4 text-cyan-400" />
+                AI Powered Learning
               </div>
 
-              <div className="container mx-auto px-4 py-24 relative">
-                <div className="max-w-4xl mx-auto text-center">
-                  <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary text-sm font-medium mb-8 animate-slide-up">
-                    <Sparkles className="w-4 h-4" /> AI-Powered Learning Platform
-                  </div>
+              <h1 className="text-6xl md:text-8xl font-extrabold mb-6 text-wrap">
+                Flash<span className="bg-linear-to-r from-cyan-400 via-purple-500 to-pink-500 bg-clip-text text-transparent text-wrap">Quiz+</span>
+              </h1>
 
-                  <h1 className="text-5xl md:text-7xl font-bold text-foreground mb-6 animate-slide-up stagger-1">
-                    Flash<span className="text-gradient">Quiz+</span>
-                  </h1>
-                  <p className="text-xl md:text-2xl text-foreground/80 font-medium mb-4 animate-slide-up stagger-2">
-                    Test Your Knowledge Instantly
-                  </p>
-                  <p className="text-lg text-muted-foreground mb-10 max-w-2xl mx-auto animate-slide-up stagger-3">
-                    Upload your notes and get quizzes or flashcards in seconds.
-                  </p>
+              <p className="text-xl text-gray-300 mb-10">
+                Turn your notes into instant knowledge
+              </p>
 
-                  <button onClick={() => setAppState("upload")} className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-primary text-white hover:bg-primary/90 transition animate-slide-up stagger-4">
-                    <Upload className="w-5 h-5" /> Upload Document <ArrowRight className="w-5 h-5" />
-                  </button>
-                </div>
+              <motion.button
+                whileHover={{ scale: 1.08 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setAppState("upload")}
+                className="px-8 py-4 rounded-xl bg-linear-to-r from-cyan-500 to-purple-600
+             neon-pulse btn-neon animate-slide-up stagger-4"
+              >
+                <Upload className="inline mr-2" /> Upload Document
+              </motion.button>
+
+              <div className="mt-20 grid md:grid-cols-3 gap-8 max-w-5xl mx-auto px-4">
+                {features.map((f, i) => (
+                  <motion.div
+                    key={i}
+                    whileHover={{ y: -10 }}
+                    className="card-futuristic animate-fade-in p-8 rounded-2xl
+                bg-white/10 backdrop-blur border border-white/20"
+                  >
+                    <f.icon className="w-10 h-10 text-cyan-400 mb-4 mx-auto" />
+                    <h3 className="text-xl font-bold mb-2">{f.title}</h3>
+                    <p className="text-gray-300">{f.desc}</p>
+                  </motion.div>
+                ))}
               </div>
-            </section>
+            </motion.section>
+          )}
 
-            {/* Features */}
-            <section className="py-20 bg-muted/30">
-              <div className="container mx-auto px-4 grid md:grid-cols-3 gap-8">
-                {features.map((feature, index) => {
-                  const Icon = feature.icon;
-                  return (
-                    <div key={index} className="card-interactive p-8 text-center">
-                      <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-linear-to-br from-primary/20 to-purple-500/20 flex items-center justify-center">
-                        <Icon className="w-8 h-8 text-primary" />
-                      </div>
-                      <h3 className="text-xl font-bold text-foreground mb-3">{feature.title}</h3>
-                      <p className="text-muted-foreground">{feature.description}</p>
-                    </div>
-                  );
-                })}
-              </div>
-            </section>
-          </>
-        )}
-
-        {/* Upload */}
-        {appState === "upload" && (
-          <section className="py-20">
-            <div className="container mx-auto px-4 max-w-2xl">
-              <div className="text-center mb-10">
-                <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4">Upload Your Document</h1>
-                <p className="text-muted-foreground">We'll generate quiz questions or flashcards from your content</p>
-              </div>
-
+          {/* UPLOAD */}
+          {appState === "upload" && (
+            <motion.section
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="py-20 max-w-xl mx-auto px-4"
+            >
               <FileUpload onFileSelect={handleFileSelect} />
-
               {uploadedFile && (
-                <div className="mt-8 animate-fade-in">
-                  <button onClick={() => setAppState("mode-select")} className="flex items-center justify-center w-full gap-2 px-6 py-3 rounded-xl bg-primary text-white hover:bg-primary/90 transition">
-                    Continue <ArrowRight className="w-5 h-5" />
-                  </button>
-                </div>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  onClick={() => setAppState("mode-select")}
+                  className="mt-8 w-full py-3 rounded-xl bg-linear-to-r from-cyan-500 to-purple-600"
+                >
+                  Continue <ArrowRight className="inline ml-2" />
+                </motion.button>
               )}
-            </div>
-          </section>
-        )}
+            </motion.section>
+          )}
 
-        {/* Mode Select */}
-        {appState === "mode-select" && (
-          <section className="py-20">
-            <div className="container mx-auto px-4 max-w-xl">
-              <div className="text-center mb-10">
-                <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4">Choose Your Mode</h1>
-                <p className="text-muted-foreground">How would you like to study?</p>
-              </div>
+          {/* MODE */}
+          {appState === "mode-select" && (
+            <motion.section className="py-20 max-w-xl mx-auto px-4">
+              <ModeToggle mode={mode} onModeChange={setMode} />
+              <button
+                disabled={loading}
+                onClick={handleGenerate}
+                className="flex justify-center items-center mt-8 w-full py-3 rounded-xl bg-linear-to-r from-pink-500 to-purple-600 disabled:opacity-50"
+              >
+                {
+  loading ? (
+    <span className="loader"></span>
+  ) : (
+    <span className="flex items-center mx-auto">
+      <Zap className="inline mr-2" />
+      Create {mode === "quiz" ? "Quiz" : "Flashcards"}
+    </span>
+  )
+}
 
-              <div className="card-elevated p-6 mb-8">
-                <ModeToggle mode={mode} onModeChange={setMode} />
-              </div>
-
-              <button onClick={handleGenerate} className="flex items-center justify-center w-full gap-2 px-6 py-3 rounded-xl bg-primary text-white hover:bg-primary/90 transition">
-                <Zap className="w-5 h-5" /> Create {mode === "quiz" ? "Quiz" : "Flashcards"}
+                
               </button>
-            </div>
-          </section>
-        )}
+            </motion.section>
+          )}
 
-        {/* Quiz */}
-        {appState === "quiz" && (
-          <section className="py-20">
-            <div className="container mx-auto px-4">
+          {/* QUIZ */}
+          {appState === "quiz" && (
+            <div className="p-2 rounded-3xl animated-border
+ bg-linear-to-r from-cyan-400 via-purple-500 to-pink-500">
+
+            <motion.section className="py-20">
+              <span className="px-4 py-2 rounded-full text-cyan-300 font-bold
+ bg-linear-to-br from-[#0b0625] to-[#1a1835]
+ neon-pulse animate-fade-in relative z-1000">
+  ⏱ {formatTime(quizTime)}
+</span>
               <QuizCard
                 key={currentQuestionIndex}
-                question={sampleQuizzes[currentQuestionIndex].question}
-                options={sampleQuizzes[currentQuestionIndex].options}
-                correctAnswerId={sampleQuizzes[currentQuestionIndex].correctAnswerId}
+                question={quizzes[currentQuestionIndex].question}
+                options={quizzes[currentQuestionIndex].options}
+                correctAnswer={quizzes[currentQuestionIndex].answer}
                 onAnswer={handleQuizAnswer}
                 questionNumber={currentQuestionIndex + 1}
-                totalQuestions={sampleQuizzes.length}
+                totalQuestions={quizzes.length}
               />
-            </div>
-          </section>
-        )}
+            </motion.section>
+                </div>
+          )}
 
-        {/* Flashcards */}
-        {appState === "flashcard" && (
-          <section className="py-20">
-            <div className="container mx-auto px-4">
+          {/* FLASHCARDS */}
+          {appState === "flashcard" && (
+            <motion.section className="py-20 animate-float">
               <Flashcard
-                front={sampleFlashcards[currentCardIndex].front}
-                back={sampleFlashcards[currentCardIndex].back}
+                front={flashCards[currentCardIndex].front}
+                back={flashCards[currentCardIndex].back}
                 currentIndex={currentCardIndex}
-                totalCards={sampleFlashcards.length}
-                onNext={() => setCurrentCardIndex((prev) => Math.min(prev + 1, sampleFlashcards.length - 1))}
-                onPrevious={() => setCurrentCardIndex((prev) => Math.max(prev - 1, 0))}
+                totalCards={flashCards.length}
+                onNext={() => setCurrentCardIndex((p) => Math.min(p + 1, flashCards.length - 1))}
+                onPrevious={() => setCurrentCardIndex((p) => Math.max(p - 1, 0))}
               />
-            </div>
-          </section>
-        )}
+            </motion.section>
+          )}
 
-        {/* Results */}
-        {appState === "results" && (
-          <section className="py-20">
-            <div className="container mx-auto px-4">
+          {/* RESULTS */}
+          {appState === "results" && (
+            <motion.section className="py-20">
               <ResultsSummary
-                totalQuestions={sampleQuizzes.length}
+                totalQuestions={quizzes.length}
                 correctAnswers={correctAnswers}
                 incorrectAnswers={incorrectAnswers}
-                weakTopics={[
-                  { name: "Geography", score: 40 },
-                  { name: "Science", score: 65 },
-                ]}
                 onRetryAll={handleRetryAll}
+                weakTopics={weakTopics}
                 onRetryWeak={handleRetryAll}
+                timeTaken={quizTime}
               />
-            </div>
-          </section>
-        )}
+            </motion.section>
+          )}
+
+        </AnimatePresence>
       </main>
     </div>
   );

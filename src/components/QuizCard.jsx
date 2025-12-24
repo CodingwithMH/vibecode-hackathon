@@ -4,44 +4,46 @@ import { Check, X } from "lucide-react";
 export default function QuizCard({
   question,
   options,
-  correctAnswerId,
+  correctAnswer,
   onAnswer,
   questionNumber,
   totalQuestions,
 }) {
-  const [selectedId, setSelectedId] = useState(null);
+  const [selected, setSelected] = useState("");
   const [hasAnswered, setHasAnswered] = useState(false);
 
-  const handleSelect = (optionId) => {
+  const handleSelect = (option) => {
     if (hasAnswered) return;
 
-    setSelectedId(optionId);
+    setSelected(option);
     setHasAnswered(true);
 
-    const isCorrect = optionId === correctAnswerId;
+    const isCorrect = option === correctAnswer;
     setTimeout(() => onAnswer(isCorrect), 1500);
   };
 
-  const getOptionStyles = (optionId) => {
+  const getOptionStyles = (option) => {
     if (!hasAnswered) {
-      return selectedId === optionId
-        ? "border-blue-500 bg-blue-50"
-        : "border-gray-300 hover:border-blue-400 hover:bg-gray-50";
+      return selected === option
+        ? "border-blue-400 bg-blue-50/30 shadow-inner shadow-blue-500/50"
+        : "border-gray-700 hover:border-blue-400 hover:bg-blue-50/20 hover:shadow-lg";
     }
 
-    if (optionId === correctAnswerId) return "border-green-500 bg-green-50 animate-pulse";
-    if (optionId === selectedId && optionId !== correctAnswerId) return "border-red-500 bg-red-50 animate-shake";
+    if (option === correctAnswer)
+      return "border-green-400 bg-green-50/30 animate-pulse shadow-inner shadow-green-500/50";
+    if (option === selected && option !== correctAnswer)
+      return "border-red-400 bg-red-50/30 animate-shake shadow-inner shadow-red-500/50";
 
-    return "border-gray-300 opacity-50";
+    return "border-gray-600 opacity-50";
   };
 
   const optionLabels = ["A", "B", "C", "D"];
 
   return (
-    <div className="max-w-2xl mx-auto p-8 rounded-2xl shadow-lg bg-white animate-scale-in">
+    <div className="max-w-2xl mx-auto p-8 rounded-3xl shadow-2xl bg-linear-to-br from-[#0b0625] to-[#1a1835] text-white animate-scale-in border border-gray-700">
       {/* Progress */}
       <div className="flex items-center justify-between mb-6">
-        <span className="text-sm font-medium text-gray-500">
+        <span className="text-sm font-semibold text-gray-300">
           Question {questionNumber} of {totalQuestions}
         </span>
         <div className="flex gap-1">
@@ -49,7 +51,7 @@ export default function QuizCard({
             <div
               key={i}
               className={`w-2 h-2 rounded-full transition-colors duration-300 ${
-                i < questionNumber ? "bg-blue-500" : "bg-gray-300"
+                i < questionNumber ? "bg-blue-400" : "bg-gray-500/30"
               }`}
             />
           ))}
@@ -57,44 +59,48 @@ export default function QuizCard({
       </div>
 
       {/* Question */}
-      <h2 className="text-2xl font-bold text-gray-900 mb-8 leading-relaxed">{question}</h2>
+      <h2 className="text-xl md:text-2xl font-bold mb-8 leading-relaxed text-blue-100 drop-shadow-lg">
+        {question}
+      </h2>
 
       {/* Options */}
-      <div className="space-y-3">
+      <div className="space-y-4">
         {options.map((option, index) => (
           <button
-            key={option.id}
-            onClick={() => handleSelect(option.id)}
+            key={option}
+            onClick={() => handleSelect(option)}
             disabled={hasAnswered}
             className={`
-              w-full p-4 rounded-xl border-2 text-left flex items-center gap-4 transition-all duration-300
-              ${getOptionStyles(option.id)}
+              w-full p-5 rounded-2xl border-2 flex items-center gap-4 transition-all duration-300 transform hover:scale-105
+              ${getOptionStyles(option)}
               ${!hasAnswered ? "cursor-pointer" : "cursor-default"}
             `}
           >
             <span
               className={`
-                w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm transition-colors duration-300
+                w-12 h-12 rounded-xl flex items-center justify-center font-bold text-lg transition-all duration-300
                 ${
-                  selectedId === option.id && !hasAnswered
-                    ? "bg-blue-500 text-white"
-                    : hasAnswered && option.id === correctAnswerId
-                    ? "bg-green-500 text-white"
-                    : hasAnswered && option.id === selectedId
-                    ? "bg-red-500 text-white"
-                    : "bg-gray-100 text-gray-700 group-hover:bg-blue-50 group-hover:text-blue-600"
+                  selected === option && !hasAnswered
+                    ? "bg-blue-500 text-white shadow-md shadow-blue-500/50"
+                    : hasAnswered && option === correctAnswer
+                    ? "bg-green-500 text-white shadow-md shadow-green-400/50"
+                    : hasAnswered && option === selected
+                    ? "bg-red-500 text-white shadow-md shadow-red-400/50"
+                    : "bg-gray-800 text-gray-300 hover:bg-blue-500/20 hover:text-blue-300"
                 }
               `}
             >
-              {hasAnswered && option.id === correctAnswerId ? (
-                <Check className="w-5 h-5" />
-              ) : hasAnswered && option.id === selectedId && option.id !== correctAnswerId ? (
-                <X className="w-5 h-5" />
+              {hasAnswered && option === correctAnswer ? (
+                <Check className="w-6 h-6" />
+              ) : hasAnswered && option === selected && option !== correctAnswer ? (
+                <X className="w-6 h-6" />
               ) : (
                 optionLabels[index]
               )}
             </span>
-            <span className="text-gray-900 font-medium">{option.text}</span>
+            <span className="flex-1 text-left font-medium text-gray-100 drop-shadow-md">
+              {option}
+            </span>
           </button>
         ))}
       </div>
@@ -103,11 +109,13 @@ export default function QuizCard({
       {hasAnswered && (
         <div
           className={`
-            mt-6 p-4 rounded-xl text-center font-semibold transition-all duration-300
-            ${selectedId === correctAnswerId ? "bg-green-50 text-green-600" : "bg-red-50 text-red-600"}
+            mt-6 p-4 rounded-2xl text-center font-semibold transition-all duration-300
+            ${selected === correctAnswer
+              ? "bg-green-500/20 text-green-400 shadow-lg shadow-green-400/50"
+              : "bg-red-500/20 text-red-400 shadow-lg shadow-red-400/50"}
           `}
         >
-          {selectedId === correctAnswerId
+          {selected === correctAnswer
             ? "🎉 Correct! Great job!"
             : "❌ Incorrect. The correct answer is highlighted above."}
         </div>
